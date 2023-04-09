@@ -1,0 +1,93 @@
+import React from "react";
+import {
+    MapPinIcon,
+    CheckBadgeIcon,
+    UserGroupIcon,
+    HeartIcon
+} from "@heroicons/react/24/outline";
+import Nav from "../layout/Nav";
+import { useNavigate } from "react-router-dom";
+
+function View() {
+
+    const [costs, setCost] = React.useState([])
+    const [r, setR] = React.useState(0.0)
+    const [desc, setDesc] = React.useState("")
+    const [name, setName] = React.useState("")
+    const navigate = useNavigate();
+
+    function getStreams() {
+        fetch(`/fin/streams/retrieve`)
+            .then(res => res.json())
+            .then(r => setCost(r))
+    }
+
+    function addStream() {
+        fetch(`/fin/streams/add`, {
+            method: 'POST',
+            body: JSON.stringify({
+                name: name,
+                desc: desc,
+                cost: c
+            }),
+            headers: new Headers({
+                "Content-Type": "application/json"
+            })
+        })
+    }
+
+    const handleSubmit = () => {
+        const date = new Date();
+
+        let time = `${date.getHours()}:${date.getMinutes()}`
+        let _date = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`
+
+        addStream()
+        setTimeout(() => setSubmitted(false), 2 * 1000);
+    };
+
+    return (
+        <div
+            className="flex h-screen w-screen"
+        >
+            <div className="center w-screen" style={{"justifyContent": "center", "flex": 1}}>
+                <div className="p-6 m-2 marginadding">
+                    <p className="text-4xl font-bold m-3">Post an Event or Violation</p>
+                    <Forms title="Revenue Stream" type="text" value={name} change={setName} />
+                    <Forms
+                        title="Description"
+                        type="text"
+                        value={desc}
+                        change={setDesc}
+                    />
+                    <Forms title="Cost ($)" type="number" value={r} change={setR} />
+                    <button
+                        className="outline-none animate-bounce p-2 border-2 border-green-900 font-semibold text-green-800 rounded-lg m-2 outline-none"
+                        onClick={handleSubmit}
+                    >
+                        <div className="flex">
+                            {submitted ? (
+                                <div>
+                                    {/* <svg width="100" height="100" className="animate-spin">
+                  <path d="M0,50 a1,1 0 0,0 50,0" fill="green" />
+                </svg> */}
+                                    <ArrowPathIcon width={30} className="animate-spin" />
+                                </div>
+                            ) : (
+                                <PlusCircleIcon width={30} />
+                            )}{" "}
+                            <p className="p-1">Add a Revenue Stream :D</p>
+                        </div>
+                    </button>
+                    {submitted && (
+                        <div>
+                            <p>Success!</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default Nav(View);
